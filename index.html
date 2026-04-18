@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>AttentionX</title>
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+</head>
+
+<body>
+    <main class="container">
+        <h2>🎬 AttentionX</h2>
+        <p>Upload video → get viral clips</p>
+
+        <input type="file" id="videoInput" accept="video/*">
+        <button onclick="uploadVideo()">Process Video</button>
+
+        <p id="status"></p>
+    </main>
+
+    <script>
+        async function uploadVideo() {
+            const fileInput = document.getElementById("videoInput");
+            const status = document.getElementById("status");
+
+            if (!fileInput.files.length) {
+                status.innerText = "Please select a video";
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            status.innerText = "Processing... ⏳";
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/process-video", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.status === "success") {
+                    status.innerText = "Done! Check outputs folder 🎉";
+                } else {
+                    status.innerText = "Error: " + data.message;
+                }
+
+            } catch (err) {
+                status.innerText = "Request failed";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
